@@ -21,32 +21,48 @@
  * DefaultGUIModel with a custom GUI.
  */
 
-#include "plugin-template.h"
+#include "ss_ctrl.h"
 #include <iostream>
 #include <main_window.h>
 
 extern "C" Plugin::Object*
 createRTXIPlugin(void)
 {
-  return new PluginTemplate();
+  return new SsCtrl();
 }
 
 static DefaultGUIModel::variable_t vars[] = {
   {
-    "GUI label", "Tooltip description",
+    "State-space controller", "Tooltip description",
     DefaultGUIModel::PARAMETER | DefaultGUIModel::DOUBLE,
   },
   {
     "A State", "Tooltip description", DefaultGUIModel::STATE,
   },
+
+
+//definitely need to add reference here
+
+	{
+		"x1","state in", DefaultGUIModel::INPUT,
+	},
+	{
+		"x2","state in", DefaultGUIModel::INPUT,
+	},
+	{
+		"u","stim out", DefaultGUIModel::OUTPUT,
+	},
+
+
+
 };
 
 static size_t num_vars = sizeof(vars) / sizeof(DefaultGUIModel::variable_t);
 
-PluginTemplate::PluginTemplate(void)
-  : DefaultGUIModel("PluginTemplate with Custom GUI", ::vars, ::num_vars)
+SsCtrl::SsCtrl(void)
+  : DefaultGUIModel("SsCtrl with Custom GUI", ::vars, ::num_vars)
 {
-  setWhatsThis("<p><b>PluginTemplate:</b><br>QWhatsThis description.</p>");
+  setWhatsThis("<p><b>SsCtrl:</b><br>QWhatsThis description.</p>");
   DefaultGUIModel::createGUI(vars,
                              num_vars); // this is required to create the GUI
   customizeGUI();
@@ -58,25 +74,44 @@ PluginTemplate::PluginTemplate(void)
   QTimer::singleShot(0, this, SLOT(resizeMe()));
 }
 
-PluginTemplate::~PluginTemplate(void)
+SsCtrl::~SsCtrl(void)
 {
 }
 
+
 void
-PluginTemplate::execute(void)
+SsCtrl::calcU(void)
 {
+	u = -K*x;
+	setState("A State",u);
+}
+
+void
+SsCtrl::execute(void)
+{
+  x << input(0), input(1);
+  calcU();
+  output(0) = u;
+
   return;
 }
 
 void
-PluginTemplate::initParameters(void)
+SsCtrl::initParameters(void)
 {
   some_parameter = 0;
   some_state = 0;
+
+	x << 0,0;
+	K << 1e2,1e2;
+	u = 0;
+
+
 }
 
+
 void
-PluginTemplate::update(DefaultGUIModel::update_flags_t flag)
+SsCtrl::update(DefaultGUIModel::update_flags_t flag)
 {
   switch (flag) {
     case INIT:
@@ -105,20 +140,18 @@ PluginTemplate::update(DefaultGUIModel::update_flags_t flag)
 }
 
 void
-PluginTemplate::customizeGUI(void)
+SsCtrl::customizeGUI(void)
 {
   QGridLayout* customlayout = DefaultGUIModel::getLayout();
 
   QGroupBox* button_group = new QGroupBox;
 
-  QPushButton* abutton = new QPushButton("Button A");
-  QPushButton* bbutton = new QPushButton("Button B");
+  QPushButton* abutton = new QPushButton("Load Gains");
   QHBoxLayout* button_layout = new QHBoxLayout;
   button_group->setLayout(button_layout);
   button_layout->addWidget(abutton);
-  button_layout->addWidget(bbutton);
+
   QObject::connect(abutton, SIGNAL(clicked()), this, SLOT(aBttn_event()));
-  QObject::connect(bbutton, SIGNAL(clicked()), this, SLOT(bBttn_event()));
 
   customlayout->addWidget(button_group, 0, 0);
   setLayout(customlayout);
@@ -126,11 +159,7 @@ PluginTemplate::customizeGUI(void)
 
 // functions designated as Qt slots are implemented as regular C++ functions
 void
-PluginTemplate::aBttn_event(void)
+SsCtrl::aBttn_event(void)
 {
 }
 
-void
-PluginTemplate::bBttn_event(void)
-{
-}

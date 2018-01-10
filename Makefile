@@ -1,9 +1,9 @@
-PLUGIN_NAME = plugin_template
+PLUGIN_NAME = ss_ctrl
 
-HEADERS = plugin-template.h
+HEADERS = ss_ctrl.h
 
-SOURCES = plugin-template.cpp\
-          moc_plugin-template.cpp\
+SOURCES = ss_ctrl.cpp\
+          moc_ss_ctrl.cpp\
 
 LIBS = 
 

@@ -23,14 +23,17 @@
 
 #include <default_gui_model.h>
 
-class PluginTemplate : public DefaultGUIModel
+#include "../../../module_help/eigen/Eigen/Dense"
+
+class SsCtrl : public DefaultGUIModel
 {
 
   Q_OBJECT
 
 public:
-  PluginTemplate(void);
-  virtual ~PluginTemplate(void);
+
+  SsCtrl(void);
+  virtual ~SsCtrl(void);
 
   void execute(void);
   void createGUI(DefaultGUIModel::variable_t*, int);
@@ -44,6 +47,11 @@ private:
   double some_state;
   double period;
 
+  Eigen::Vector2d x;
+  Eigen::RowVector2d K;
+  double u;
+
+  void calcU();
   void initParameters();
 
 private slots:
@@ -51,5 +59,4 @@ private slots:
   // through the Qt API. they must be implemented in plugin_template.cpp
 
   void aBttn_event(void);
-  void bBttn_event(void);
 };
