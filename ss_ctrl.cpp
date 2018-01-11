@@ -22,7 +22,6 @@
  */
 
 #include "ss_ctrl.h"
-#include <iostream>
 #include <main_window.h>
 
 extern "C" Plugin::Object*
@@ -80,6 +79,34 @@ SsCtrl::~SsCtrl(void)
 
 
 void
+SsCtrl::loadGains(void)
+{
+	std::ifstream myfile;
+	myfile.open("../ss_ctrl/params/gain_params.txt");
+
+	pullParamLine(myfile); //gets nx
+
+	std::vector<double> vK = pullParamLine(myfile); 	
+	Eigen::Map<Eigen::RowVector2d> tK(vK.data(),1,K.cols());
+	K = tK;
+
+	myfile.close();
+}
+
+void 
+SsCtrl::printGains(void)
+{
+  std::cout <<"Here is the matrix K:\n" << K << "\n";
+}
+
+void SsCtrl::resetSys(void)
+{
+	//mostly useless? since u is set instantaneously from x which is read in from input?
+    x << 0,0;
+	u = 0;
+}
+
+void
 SsCtrl::calcU(void)
 {
 	u = -K*x;
@@ -102,9 +129,11 @@ SsCtrl::initParameters(void)
   some_parameter = 0;
   some_state = 0;
 
-	x << 0,0;
 	K << 1e2,1e2;
+	x << 0,0;
 	u = 0;
+	loadGains();
+	printGains();
 
 
 }
@@ -147,11 +176,13 @@ SsCtrl::customizeGUI(void)
   QGroupBox* button_group = new QGroupBox;
 
   QPushButton* abutton = new QPushButton("Load Gains");
+  QPushButton* bbutton = new QPushButton("Reset Sys");
   QHBoxLayout* button_layout = new QHBoxLayout;
   button_group->setLayout(button_layout);
   button_layout->addWidget(abutton);
-
+  button_layout->addWidget(bbutton);
   QObject::connect(abutton, SIGNAL(clicked()), this, SLOT(aBttn_event()));
+  QObject::connect(bbutton, SIGNAL(clicked()), this, SLOT(bBttn_event()));
 
   customlayout->addWidget(button_group, 0, 0);
   setLayout(customlayout);
@@ -161,5 +192,13 @@ SsCtrl::customizeGUI(void)
 void
 SsCtrl::aBttn_event(void)
 {
+	loadGains();
+	printGains();
+}
+
+void
+SsCtrl::bBttn_event(void)
+{
+	resetSys();
 }
 

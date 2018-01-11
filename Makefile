@@ -4,6 +4,7 @@ HEADERS = ss_ctrl.h
 
 SOURCES = ss_ctrl.cpp\
           moc_ss_ctrl.cpp\
+		  ../../../module_help/StAC_rtxi/dataFuns.cpp\
 
 LIBS = 
 
