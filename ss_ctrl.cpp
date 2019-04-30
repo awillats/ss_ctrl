@@ -81,8 +81,10 @@ SsCtrl::~SsCtrl(void)
 void
 SsCtrl::loadGains(void)
 {
+	std::string homepath = getenv("HOME");
+
 	std::ifstream myfile;
-	myfile.open("../ss_ctrl/params/gain_params.txt");
+	myfile.open(homepath+"/RTXI/modules/ss_modules/ss_ctrl/params/gain_params.txt");
 
 	pullParamLine(myfile); //gets nx
 
