@@ -54,6 +54,9 @@ private:
   double some_state;
   double period;
 
+  double r;
+  double nbar;
+
   Eigen::Vector2d x;
   Eigen::RowVector2d K;
   double u;

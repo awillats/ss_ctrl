@@ -35,15 +35,13 @@ static DefaultGUIModel::variable_t vars[] = {
     "State-space controller", "Tooltip description",
     DefaultGUIModel::PARAMETER | DefaultGUIModel::DOUBLE,
   },
-  {
-    "A State", "Tooltip description", DefaultGUIModel::STATE,
-  },
 
 
 //definitely need to add reference here
 	{
 		"X_in","state in", DefaultGUIModel::INPUT | DefaultGUIModel::VECTORDOUBLE,
 	},
+	{  "r","ref", DefaultGUIModel::INPUT},
 	{
 		"x1","state in", DefaultGUIModel::INPUT,
 	},
@@ -94,6 +92,9 @@ SsCtrl::loadGains(void)
 	Eigen::Map<Eigen::RowVector2d> tK(vK.data(),1,K.cols());
 	K = tK;
 
+	std::vector<double> nbar_vec = pullParamLine(myfile); 	
+	nbar = nbar_vec[0];
+
 	myfile.close();
 }
 
@@ -113,7 +114,7 @@ void SsCtrl::resetSys(void)
 void
 SsCtrl::calcU(void)
 {
-	u = -K*x;
+	u = r*nbar-K*x;
 	//setState("A State",u);
 }
 
@@ -124,6 +125,9 @@ SsCtrl::execute(void)
   plds::stdVec x_in = inputVector(0);
   Eigen::Vector2d x_temp(x_in.data());
   x = x_temp;//Eigen::Map<Vector2d>(x_in,1,2);//hardcode
+
+  r = input(1);
+
   calcU();
   output(0) = u;
 
