@@ -1,3 +1,5 @@
 nx = [2];
-K = [1e2 1e1];
-nbar = [35];
+K = [12.9900   -1.0000];
+nbar = [13];
+
+//http://ctms.engin.umich.edu/CTMS/index.php?example=MotorSpeed&section=ControlStateSpace

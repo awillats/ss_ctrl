@@ -107,7 +107,7 @@ SsCtrl::printGains(void)
 void SsCtrl::resetSys(void)
 {
 	//mostly useless? since u is set instantaneously from x which is read in from input?
-    x << 0,0;
+       x << 0,0;
 	u = 0;
 }
 
