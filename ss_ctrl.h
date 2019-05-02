@@ -29,6 +29,9 @@
 #include "../../../module_help/StAC_rtxi/dataFuns.h"//for pullParamLine
 #include "../../../module_help/eigen/Eigen/Dense"
 
+// plds
+#include <dynCtrlEst>
+
 class SsCtrl : public DefaultGUIModel
 {
 

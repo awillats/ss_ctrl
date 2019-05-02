@@ -41,7 +41,9 @@ static DefaultGUIModel::variable_t vars[] = {
 
 
 //definitely need to add reference here
-
+	{
+		"X_in","state in", DefaultGUIModel::INPUT | DefaultGUIModel::VECTORDOUBLE,
+	},
 	{
 		"x1","state in", DefaultGUIModel::INPUT,
 	},
@@ -112,13 +114,16 @@ void
 SsCtrl::calcU(void)
 {
 	u = -K*x;
-	setState("A State",u);
+	//setState("A State",u);
 }
 
 void
 SsCtrl::execute(void)
 {
-  x << input(0), input(1);
+  //x << input(1), input(2);
+  plds::stdVec x_in = inputVector(0);
+  Eigen::Vector2d x_temp(x_in.data());
+  x = x_temp;//Eigen::Map<Vector2d>(x_in,1,2);//hardcode
   calcU();
   output(0) = u;
 
