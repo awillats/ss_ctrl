@@ -73,4 +73,5 @@ private slots:
 
   void aBttn_event(void);
   void bBttn_event(void);
+  void zBttn_event(bool);
 };

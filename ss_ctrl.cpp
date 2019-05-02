@@ -188,13 +188,17 @@ SsCtrl::customizeGUI(void)
 
   QPushButton* abutton = new QPushButton("Load Gains");
   QPushButton* bbutton = new QPushButton("Reset Sys");
+  QPushButton* zbutton = new QPushButton("Set ctrl gain to 0");
+  zbutton->setCheckable(true);
   QHBoxLayout* button_layout = new QHBoxLayout;
+
   button_group->setLayout(button_layout);
   button_layout->addWidget(abutton);
   button_layout->addWidget(bbutton);
+  button_layout->addWidget(zbutton);
   QObject::connect(abutton, SIGNAL(clicked()), this, SLOT(aBttn_event()));
   QObject::connect(bbutton, SIGNAL(clicked()), this, SLOT(bBttn_event()));
-
+  QObject::connect(zbutton, SIGNAL(toggled(bool)), this, SLOT(zBttn_event(bool)));
   customlayout->addWidget(button_group, 0, 0);
   setLayout(customlayout);
 }
@@ -212,4 +216,38 @@ SsCtrl::bBttn_event(void)
 {
 	resetSys();
 }
+
+void SsCtrl::zBttn_event(bool tog)
+{
+	loadGains();
+	if (tog)
+	{
+		K << 0.0,0.0;
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

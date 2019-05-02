@@ -1,7 +1,0 @@
-3.4 nx = [2];
-A = [0.9990 -0.1903 0.0095 0.9039]; 
-B = [0 0.0095];
-C = [1 0];
-D = [0];
-
-//note everything is read in column major
