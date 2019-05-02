@@ -35,19 +35,19 @@ static DefaultGUIModel::variable_t vars[] = {
     "State-space controller", "Tooltip description",
     DefaultGUIModel::PARAMETER | DefaultGUIModel::DOUBLE,
   },
-  {
-    "A State", "Tooltip description", DefaultGUIModel::STATE,
-  },
 
 
 //definitely need to add reference here
-
+	{
+		"X_in","state in", DefaultGUIModel::INPUT | DefaultGUIModel::VECTORDOUBLE,
+	},
+	{  "r","ref", DefaultGUIModel::INPUT},
 	{
 		"x1","state in", DefaultGUIModel::INPUT,
-	},
+	},//hardcode
 	{
 		"x2","state in", DefaultGUIModel::INPUT,
-	},
+	},//hardcode
 	{
 		"u","stim out", DefaultGUIModel::OUTPUT,
 	},
@@ -92,6 +92,9 @@ SsCtrl::loadGains(void)
 	Eigen::Map<Eigen::RowVector2d> tK(vK.data(),1,K.cols());
 	K = tK;
 
+	std::vector<double> nbar_vec = pullParamLine(myfile); 	
+	nbar = nbar_vec[0];
+
 	myfile.close();
 }
 
@@ -104,21 +107,27 @@ SsCtrl::printGains(void)
 void SsCtrl::resetSys(void)
 {
 	//mostly useless? since u is set instantaneously from x which is read in from input?
-    x << 0,0;
+       x << 0,0;//hardcode
 	u = 0;
 }
 
 void
 SsCtrl::calcU(void)
 {
-	u = -K*x;
-	setState("A State",u);
+	u = r*nbar-K*x;
+	//setState("A State",u);
 }
 
 void
 SsCtrl::execute(void)
 {
-  x << input(0), input(1);
+  //x << input(1), input(2);
+  plds::stdVec x_in = inputVector(0);
+  Eigen::Vector2d x_temp(x_in.data());
+  x = x_temp;//Eigen::Map<Vector2d>(x_in,1,2);//hardcode
+
+  r = input(1);
+
   calcU();
   output(0) = u;
 
@@ -131,8 +140,8 @@ SsCtrl::initParameters(void)
   some_parameter = 0;
   some_state = 0;
 
-	K << 1e2,1e2;
-	x << 0,0;
+	K << 1e2,1e2;//hardcode
+	x << 0,0;//hardcode
 	u = 0;
 	loadGains();
 	printGains();
@@ -179,13 +188,17 @@ SsCtrl::customizeGUI(void)
 
   QPushButton* abutton = new QPushButton("Load Gains");
   QPushButton* bbutton = new QPushButton("Reset Sys");
+  QPushButton* zbutton = new QPushButton("Set ctrl gain to 0");
+  zbutton->setCheckable(true);
   QHBoxLayout* button_layout = new QHBoxLayout;
+
   button_group->setLayout(button_layout);
   button_layout->addWidget(abutton);
   button_layout->addWidget(bbutton);
+  button_layout->addWidget(zbutton);
   QObject::connect(abutton, SIGNAL(clicked()), this, SLOT(aBttn_event()));
   QObject::connect(bbutton, SIGNAL(clicked()), this, SLOT(bBttn_event()));
-
+  QObject::connect(zbutton, SIGNAL(toggled(bool)), this, SLOT(zBttn_event(bool)));
   customlayout->addWidget(button_group, 0, 0);
   setLayout(customlayout);
 }
@@ -203,4 +216,39 @@ SsCtrl::bBttn_event(void)
 {
 	resetSys();
 }
+
+void SsCtrl::zBttn_event(bool tog)
+{
+	loadGains();
+	if (tog)
+	{
+		K << 0.0,0.0;//hardcode
+	}
+	printGains();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

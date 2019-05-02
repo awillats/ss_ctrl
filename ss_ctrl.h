@@ -29,6 +29,9 @@
 #include "../../../module_help/StAC_rtxi/dataFuns.h"//for pullParamLine
 #include "../../../module_help/eigen/Eigen/Dense"
 
+// plds
+#include <dynCtrlEst>
+
 class SsCtrl : public DefaultGUIModel
 {
 
@@ -51,6 +54,9 @@ private:
   double some_state;
   double period;
 
+  double r;
+  double nbar;
+
   Eigen::Vector2d x;
   Eigen::RowVector2d K;
   double u;
@@ -67,4 +73,5 @@ private slots:
 
   void aBttn_event(void);
   void bBttn_event(void);
+  void zBttn_event(bool);
 };
