@@ -44,10 +44,10 @@ static DefaultGUIModel::variable_t vars[] = {
 	{  "r","ref", DefaultGUIModel::INPUT},
 	{
 		"x1","state in", DefaultGUIModel::INPUT,
-	},
+	},//hardcode
 	{
 		"x2","state in", DefaultGUIModel::INPUT,
-	},
+	},//hardcode
 	{
 		"u","stim out", DefaultGUIModel::OUTPUT,
 	},
@@ -107,7 +107,7 @@ SsCtrl::printGains(void)
 void SsCtrl::resetSys(void)
 {
 	//mostly useless? since u is set instantaneously from x which is read in from input?
-       x << 0,0;
+       x << 0,0;//hardcode
 	u = 0;
 }
 
@@ -140,8 +140,8 @@ SsCtrl::initParameters(void)
   some_parameter = 0;
   some_state = 0;
 
-	K << 1e2,1e2;
-	x << 0,0;
+	K << 1e2,1e2;//hardcode
+	x << 0,0;//hardcode
 	u = 0;
 	loadGains();
 	printGains();
@@ -222,8 +222,9 @@ void SsCtrl::zBttn_event(bool tog)
 	loadGains();
 	if (tog)
 	{
-		K << 0.0,0.0;
+		K << 0.0,0.0;//hardcode
 	}
+	printGains();
 }
 
 
