@@ -42,6 +42,8 @@ static DefaultGUIModel::variable_t vars[] = {
 		"X_in","state in", DefaultGUIModel::INPUT | DefaultGUIModel::VECTORDOUBLE,
 	},
 	{  "r","ref", DefaultGUIModel::INPUT},
+	{"q","state_index", DefaultGUIModel::INPUT | DefaultGUIModel::INTEGER},
+
 	{
 		"x1","state in", DefaultGUIModel::INPUT,
 	},//hardcode
@@ -78,6 +80,19 @@ SsCtrl::~SsCtrl(void)
 }
 
 
+
+void SsCtrl::switchGains(int idx)
+{
+	if (idx==0)
+	{
+		K = K_;
+	}
+	else
+	{
+		K=K2;
+	}
+}
+
 void
 SsCtrl::loadGains(void)
 {
@@ -91,6 +106,9 @@ SsCtrl::loadGains(void)
 	std::vector<double> vK = pullParamLine(myfile); 	
 	Eigen::Map<Eigen::RowVector2d> tK(vK.data(),1,K.cols());
 	K = tK;
+
+	K_=tK;
+	K2=tK/1.4;
 
 	std::vector<double> nbar_vec = pullParamLine(myfile); 	
 	nbar = nbar_vec[0];
@@ -122,6 +140,10 @@ void
 SsCtrl::execute(void)
 {
   //x << input(1), input(2);
+
+  switch_idx = input(2);
+  switchGains(switch_idx);
+
   plds::stdVec x_in = inputVector(0);
   Eigen::Vector2d x_temp(x_in.data());
   x = x_temp;//Eigen::Map<Vector2d>(x_in,1,2);//hardcode
@@ -223,6 +245,8 @@ void SsCtrl::zBttn_event(bool tog)
 	if (tog)
 	{
 		K << 0.0,0.0;//hardcode
+		K_ = K;// << 0.0,0.0;//hardcode
+		K2 = K;// << 0.0,0.0;//hardcode
 	}
 	printGains();
 }

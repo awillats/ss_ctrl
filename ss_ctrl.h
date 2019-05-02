@@ -61,6 +61,11 @@ private:
   Eigen::RowVector2d K;
   double u;
 
+  int switch_idx;
+  Eigen::RowVector2d K_;
+  Eigen::RowVector2d K2;
+
+  void switchGains(int);
   void loadGains();
   void printGains();
   void resetSys();
