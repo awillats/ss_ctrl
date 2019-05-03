@@ -103,12 +103,9 @@ SsCtrl::loadGains(void)
 
 	pullParamLine(myfile); //gets nx
 
-	std::vector<double> vK = pullParamLine(myfile); 	
-	Eigen::Map<Eigen::RowVector2d> tK(vK.data(),1,K.cols());
-	K = tK;
-
-	K_=tK;
-	K2=tK/1.4;
+	K = stdVec2EigenRV(pullParamLine(myfile), K.cols());
+	K_=K;
+	K2=K/1.4;
 
 	std::vector<double> nbar_vec = pullParamLine(myfile); 	
 	nbar = nbar_vec[0];
@@ -133,7 +130,6 @@ void
 SsCtrl::calcU(void)
 {
 	u = r*nbar-K*x;
-	//setState("A State",u);
 }
 
 void
@@ -146,7 +142,7 @@ SsCtrl::execute(void)
 
   plds::stdVec x_in = inputVector(0);
   Eigen::Vector2d x_temp(x_in.data());
-  x = x_temp;//Eigen::Map<Vector2d>(x_in,1,2);//hardcode
+  x = x_temp;
 
   r = input(1);
 
