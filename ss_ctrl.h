@@ -26,11 +26,14 @@
 #include <fstream>
 #include <sstream>
 #include <string>
-#include "../../../module_help/StAC_rtxi/dataFuns.h"//for pullParamLine
-#include "../../../module_help/eigen/Eigen/Dense"
+
+// in module_help
+#include <eigen/Eigen/Dense>
+#include <StAC_rtxi/dataFuns.h>//for pullParamLine
 
 // plds
 #include <dynCtrlEst>
+#include <plds_adam_funs.hpp>
 
 class SsCtrl : public DefaultGUIModel
 {
@@ -62,6 +65,8 @@ private:
   double u;
 
   int switch_idx;
+  double switch_scale;
+
   Eigen::RowVector2d K_;
   Eigen::RowVector2d K2;
 
@@ -69,7 +74,9 @@ private:
   void loadGains();
   void printGains();
   void resetSys();
+
   void calcU();
+
   void initParameters();
 
 private slots:

@@ -105,7 +105,7 @@ SsCtrl::loadGains(void)
 
 	K = stdVec2EigenRV(pullParamLine(myfile), K.cols());
 	K_=K;
-	K2=K/1.4;
+	K2=K/switch_scale;
 
 	std::vector<double> nbar_vec = pullParamLine(myfile); 	
 	nbar = nbar_vec[0];
@@ -135,8 +135,6 @@ SsCtrl::calcU(void)
 void
 SsCtrl::execute(void)
 {
-  //x << input(1), input(2);
-
   switch_idx = input(2);
   switchGains(switch_idx);
 
@@ -158,13 +156,13 @@ SsCtrl::initParameters(void)
   some_parameter = 0;
   some_state = 0;
 
+	switch_scale = 1.4;
+
 	K << 1e2,1e2;//hardcode
 	x << 0,0;//hardcode
 	u = 0;
 	loadGains();
 	printGains();
-
-
 }
 
 
