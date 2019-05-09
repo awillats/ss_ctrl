@@ -83,14 +83,7 @@ SsCtrl::~SsCtrl(void)
 
 void SsCtrl::switchGains(int idx)
 {
-	if (idx==0)
-	{
-		K = K_;
-	}
-	else
-	{
-		K=K2;
-	}
+	K = ((idx==0) ? K_ : K2);
 }
 
 void
