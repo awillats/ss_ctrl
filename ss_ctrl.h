@@ -34,6 +34,7 @@
 // plds
 #include <dynCtrlEst>
 #include <plds_adam_funs.hpp>
+#include <plds_ctrl_adam.hpp>
 
 class SsCtrl : public DefaultGUIModel
 {
@@ -57,10 +58,13 @@ private:
   double some_state;
   double period;
 
+  lds_ctrl_adam ctrlr;
+
   double r;
   double nbar;
 
   Eigen::Vector2d x;
+  adam::Vec xa;
   Eigen::RowVector2d K;
   double u;
 

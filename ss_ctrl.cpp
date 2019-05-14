@@ -24,6 +24,9 @@
 #include "ss_ctrl.h"
 #include <main_window.h>
 
+using namespace adam;
+
+
 extern "C" Plugin::Object*
 createRTXIPlugin(void)
 {
@@ -54,6 +57,12 @@ static DefaultGUIModel::variable_t vars[] = {
 		"u","stim out", DefaultGUIModel::OUTPUT,
 	},
 
+	{
+		"u_debug","stim out", DefaultGUIModel::OUTPUT,
+	},
+	{
+		"debug2","stim out", DefaultGUIModel::OUTPUT,
+	},
 
 
 };
@@ -140,6 +149,17 @@ SsCtrl::execute(void)
   calcU();
   output(0) = u;
 
+
+//figure out better import later
+  xa[0] = x_in[0];
+  xa[1] = x_in[1];
+  //xa = x_in;
+
+  //double u2=99;
+  double u2 = ctrlr.calcU(r,xa);
+  output(1) = u2;
+  output(2) = xa.n_cols;
+
   return;
 }
 
@@ -156,6 +176,14 @@ SsCtrl::initParameters(void)
 	u = 0;
 	loadGains();
 	printGains();
+
+	ctrlr = lds_ctrl_adam();
+	ctrlr.printGains();
+
+	xa = arma::vec(2); xa.fill(0);
+	xa[0] = x[0];
+	xa[1]=x[1];
+	ctrlr.calcU(r,xa);
 }
 
 
