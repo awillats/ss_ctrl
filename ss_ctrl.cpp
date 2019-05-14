@@ -92,9 +92,10 @@ SsCtrl::~SsCtrl(void)
 
 void SsCtrl::switchGains(int idx)
 {
-	K = ((idx==0) ? K_ : K2);
+	//K = ((idx==0) ? K_ : K2);
 }
 
+/*
 void
 SsCtrl::loadGains(void)
 {
@@ -133,14 +134,18 @@ SsCtrl::calcU(void)
 {
 	u = r*nbar-K*x;
 }
-
+*/
 void
 SsCtrl::execute(void)
 {
   switch_idx = input(2);
   switchGains(switch_idx);
 
+
   plds::stdVec x_in = inputVector(0);
+
+
+/*
   Eigen::Vector2d x_temp(x_in.data());
   x = x_temp;
 
@@ -148,20 +153,20 @@ SsCtrl::execute(void)
 
   calcU();
   output(0) = u;
-
+*/
 
 //pad x_in?
   //xa = arma::conv_to<Vec>::from(x_in); 
 
-  for (int i=0; i<xa.n_rows; i++)
+  for (int i=0; i<x.n_rows; i++)
   {
 	//handle cases when x_in is the wrong size
-	xa[i] = ( (i< (x_in.size()-1)) ? x_in[i] : 0 );
+	x[i] = ( (i< (x_in.size()-1)) ? x_in[i] : 0 );
   }
-  //double u2=99;
-  double u2 = ctrlr.calcU(r,xa);
-  output(1) = u2;
-  output(2) = xa.n_cols;
+  u=ctrlr.calcU(r,x);
+
+
+  output(0) = u;
 
   return;
 }
@@ -174,19 +179,12 @@ SsCtrl::initParameters(void)
 
 	switch_scale = 1.4;
 
-	K << 1e2,1e2;//hardcode
-	x << 0,0;//hardcode
+	x = arma::vec(2); x.fill(0);
 	u = 0;
-	loadGains();
-	printGains();
 
 	ctrlr = lds_ctrl_adam();
 	ctrlr.printGains();
-
-	xa = arma::vec(2); xa.fill(0);
-	xa[0] = x[0];
-	xa[1]=x[1];
-	ctrlr.calcU(r,xa);
+	ctrlr.calcU(r,x);
 }
 
 
@@ -247,18 +245,20 @@ SsCtrl::customizeGUI(void)
 void
 SsCtrl::aBttn_event(void)
 {
-	loadGains();
-	printGains();
+	//loadGains();
+	//printGains();
 }
 
 void
 SsCtrl::bBttn_event(void)
 {
-	resetSys();
+	//resetSys();
 }
 
 void SsCtrl::zBttn_event(bool tog)
 {
+	ctrlr.toggleSilent();
+/*
 	loadGains();
 	if (tog)
 	{
@@ -267,6 +267,7 @@ void SsCtrl::zBttn_event(bool tog)
 		K2 = K;// << 0.0,0.0;//hardcode
 	}
 	printGains();
+*/
 }
 
 

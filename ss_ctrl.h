@@ -60,26 +60,26 @@ private:
 
   lds_ctrl_adam ctrlr;
 
-  double r;
-  double nbar;
 
-  Eigen::Vector2d x;
-  adam::Vec xa;
-  Eigen::RowVector2d K;
-  double u;
+  //adam::data_t nbar;
+  //adam::RowVec K;
+
+  adam::Vec x;
+  adam::data_t r;
+  adam::data_t u;
 
   int switch_idx;
   double switch_scale;
 
-  Eigen::RowVector2d K_;
-  Eigen::RowVector2d K2;
+ // Eigen::RowVector2d K_;
+ // Eigen::RowVector2d K2;
 
   void switchGains(int);
-  void loadGains();
-  void printGains();
-  void resetSys();
+ // void loadGains();
+ // void printGains();
+ // void resetSys();
 
-  void calcU();
+ // void calcU();
 
   void initParameters();
 
