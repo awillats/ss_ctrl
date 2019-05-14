@@ -150,11 +150,14 @@ SsCtrl::execute(void)
   output(0) = u;
 
 
-//figure out better import later
-  xa[0] = x_in[0];
-  xa[1] = x_in[1];
-  //xa = x_in;
+//pad x_in?
+  //xa = arma::conv_to<Vec>::from(x_in); 
 
+  for (int i=0; i<xa.n_rows; i++)
+  {
+	//handle cases when x_in is the wrong size
+	xa[i] = ( (i< (x_in.size()-1)) ? x_in[i] : 0 );
+  }
   //double u2=99;
   double u2 = ctrlr.calcU(r,xa);
   output(1) = u2;
