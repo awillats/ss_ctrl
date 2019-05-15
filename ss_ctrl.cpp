@@ -138,22 +138,11 @@ SsCtrl::calcU(void)
 void
 SsCtrl::execute(void)
 {
-  switch_idx = input(2);
-  switchGains(switch_idx);
-
-
-  plds::stdVec x_in = inputVector(0);
-
-
-/*
-  Eigen::Vector2d x_temp(x_in.data());
-  x = x_temp;
 
   r = input(1);
-
-  calcU();
-  output(0) = u;
-*/
+  switch_idx = input(2);
+  switchGains(switch_idx);
+  plds::stdVec x_in = inputVector(0);
 
 //pad x_in?
   //xa = arma::conv_to<Vec>::from(x_in); 
@@ -163,9 +152,8 @@ SsCtrl::execute(void)
 	//handle cases when x_in is the wrong size
 	x[i] = ( (i< (x_in.size()-1)) ? x_in[i] : 0 );
   }
+ 
   u=ctrlr.calcU(r,x);
-
-
   output(0) = u;
 
   return;
