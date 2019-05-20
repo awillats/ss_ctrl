@@ -53,13 +53,10 @@ static DefaultGUIModel::variable_t vars[] = {
 	{
 		"x2","state in", DefaultGUIModel::INPUT,
 	},//hardcode
-	{
-		"u","stim out", DefaultGUIModel::OUTPUT,
-	},
+	
+	{"u","stim out", DefaultGUIModel::OUTPUT,},
+	{"u_sw","stim out", DefaultGUIModel::OUTPUT,},
 
-	{
-		"u_debug","stim out", DefaultGUIModel::OUTPUT,
-	},
 	{
 		"debug2","stim out", DefaultGUIModel::OUTPUT,
 	},
@@ -88,65 +85,16 @@ SsCtrl::~SsCtrl(void)
 {
 }
 
-
-
-void SsCtrl::switchGains(int idx)
-{
-	//K = ((idx==0) ? K_ : K2);
-}
-
-/*
-void
-SsCtrl::loadGains(void)
-{
-	std::string homepath = getenv("HOME");
-
-	std::ifstream myfile;
-	myfile.open(homepath+"/RTXI/modules/ss_modules/ss_ctrl/params/gain_params.txt");
-
-	pullParamLine(myfile); //gets nx
-
-	K = stdVec2EigenRV(pullParamLine(myfile), K.cols());
-	K_=K;
-	K2=K/switch_scale;
-
-	std::vector<double> nbar_vec = pullParamLine(myfile); 	
-	nbar = nbar_vec[0];
-
-	myfile.close();
-}
-
-void 
-SsCtrl::printGains(void)
-{
-  std::cout <<"Here is the matrix K:\n" << K << "\n";
-}
-
-void SsCtrl::resetSys(void)
-{
-	//mostly useless? since u is set instantaneously from x which is read in from input?
-       x << 0,0;//hardcode
-	u = 0;
-}
-
-void
-SsCtrl::calcU(void)
-{
-	u = r*nbar-K*x;
-}
-*/
 void
 SsCtrl::execute(void)
 {
-
+  stdVec x_in = inputVector(0);
   r = input(1);
   switch_idx = input(2);
-  switchGains(switch_idx);
-  plds::stdVec x_in = inputVector(0);
+  sw_ctrl.switchSys(switch_idx);
 
 //pad x_in?
   //xa = arma::conv_to<Vec>::from(x_in); 
-
   for (int i=0; i<x.n_rows; i++)
   {
 	//handle cases when x_in is the wrong size
@@ -154,7 +102,9 @@ SsCtrl::execute(void)
   }
  
   u=ctrlr.calcU(r,x);
+
   output(0) = u;
+  output(1) = sw_ctrl.calcU(r,x);
 
   return;
 }
@@ -162,9 +112,6 @@ SsCtrl::execute(void)
 void
 SsCtrl::initParameters(void)
 {
-  some_parameter = 0;
-  some_state = 0;
-
 	switch_scale = 1.4;
 
 	x = arma::vec(2); x.fill(0);
@@ -173,6 +120,20 @@ SsCtrl::initParameters(void)
 	ctrlr = lds_ctrl_adam();
 	ctrlr.printGains();
 	ctrlr.calcU(r,x);
+
+	sw_ctrl = slds_ctrl();
+	sw_ctrl.calcU(r,x);
+
+	std::cout<<"switchdebug\n\n";
+	sw_ctrl.switchSys(2);
+sw_ctrl.switchSys(-1);
+
+	sw_ctrl.switchSys(1);
+	std::cout<<"sys2:"<<sw_ctrl.K;
+	sw_ctrl.switchSys(0);
+	std::cout<<"sys1:"<<sw_ctrl.K;
+	std::cout<<"sysB:"<<sw_ctrl.allSys[1].K;
+
 }
 
 
@@ -182,12 +143,9 @@ SsCtrl::update(DefaultGUIModel::update_flags_t flag)
   switch (flag) {
     case INIT:
       period = RT::System::getInstance()->getPeriod() * 1e-6; // ms
-      setParameter("GUI label", some_parameter);
-      setState("A State", some_state);
       break;
 
     case MODIFY:
-      some_parameter = getParameter("GUI label").toDouble();
       break;
 
     case UNPAUSE:
@@ -246,16 +204,6 @@ SsCtrl::bBttn_event(void)
 void SsCtrl::zBttn_event(bool tog)
 {
 	ctrlr.toggleSilent();
-/*
-	loadGains();
-	if (tog)
-	{
-		K << 0.0,0.0;//hardcode
-		K_ = K;// << 0.0,0.0;//hardcode
-		K2 = K;// << 0.0,0.0;//hardcode
-	}
-	printGains();
-*/
 }
 
 

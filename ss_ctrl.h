@@ -54,15 +54,10 @@ protected:
   virtual void update(DefaultGUIModel::update_flags_t);
 
 private:
-  double some_parameter;
-  double some_state;
   double period;
 
   lds_ctrl_adam ctrlr;
-
-
-  //adam::data_t nbar;
-  //adam::RowVec K;
+  slds_ctrl sw_ctrl;
 
   adam::Vec x;
   adam::data_t r;
@@ -71,16 +66,7 @@ private:
   int switch_idx;
   double switch_scale;
 
- // Eigen::RowVector2d K_;
- // Eigen::RowVector2d K2;
-
   void switchGains(int);
- // void loadGains();
- // void printGains();
- // void resetSys();
-
- // void calcU();
-
   void initParameters();
 
 private slots:
