@@ -128,9 +128,10 @@ SsCtrl::initParameters(void)
 	//sw_ctrl.switchSys(2);
 //sw_ctrl.switchSys(-1);
 
-	std::cout<<"\n\n bad idx done. good idx upcoming \n\n";
-	sw_ctrl.slds_ctrl::switchSys(1);
-	std::cout<<"sys2:"<<sw_ctrl.K;
+	//std::cout<<"_"<<sw_ctrl.allSys.size()<<"_"<<"_";
+	//std::cout<<"\n\n bad idx done. good idx upcoming \n\n";
+	//sw_ctrl.switchSys(1);
+	//std::cout<<"sys2:"<<sw_ctrl.K;
 
 /*
 	sw_ctrl.switchSys(0);
