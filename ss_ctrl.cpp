@@ -124,16 +124,19 @@ SsCtrl::initParameters(void)
 	sw_ctrl = slds_ctrl();
 	sw_ctrl.calcU(r,x);
 
-	std::cout<<"switchdebug\n\n";
-	sw_ctrl.switchSys(2);
-sw_ctrl.switchSys(-1);
+	std::cout<<"\nswitchdebug\n\n";
+	//sw_ctrl.switchSys(2);
+//sw_ctrl.switchSys(-1);
 
-	sw_ctrl.switchSys(1);
+	std::cout<<"\n\n bad idx done. good idx upcoming \n\n";
+	sw_ctrl.slds_ctrl::switchSys(1);
 	std::cout<<"sys2:"<<sw_ctrl.K;
+
+/*
 	sw_ctrl.switchSys(0);
 	std::cout<<"sys1:"<<sw_ctrl.K;
 	std::cout<<"sysB:"<<sw_ctrl.allSys[1].K;
-
+*/
 }
 
 
