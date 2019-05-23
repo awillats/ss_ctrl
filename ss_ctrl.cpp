@@ -195,6 +195,8 @@ SsCtrl::customizeGUI(void)
 void
 SsCtrl::aBttn_event(void)
 {
+	ctrlr.loadGains();
+	sw_ctrl.loadGains();
 	//loadGains();
 	//printGains();
 }
