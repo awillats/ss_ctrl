@@ -26,11 +26,15 @@
 #include <fstream>
 #include <sstream>
 #include <string>
-#include "../../../module_help/StAC_rtxi/dataFuns.h"//for pullParamLine
-#include "../../../module_help/eigen/Eigen/Dense"
+
+// in module_help
+#include <eigen/Eigen/Dense>
+#include <StAC_rtxi/dataFuns.h>//for pullParamLine
 
 // plds
 #include <dynCtrlEst>
+#include <plds_adam_funs.hpp>
+#include <plds_ctrl_adam.hpp>
 
 class SsCtrl : public DefaultGUIModel
 {
@@ -50,21 +54,19 @@ protected:
   virtual void update(DefaultGUIModel::update_flags_t);
 
 private:
-  double some_parameter;
-  double some_state;
   double period;
 
-  double r;
-  double nbar;
+  lds_ctrl_adam ctrlr;
+  slds_ctrl sw_ctrl;
 
-  Eigen::Vector2d x;
-  Eigen::RowVector2d K;
-  double u;
+  adam::Vec x;
+  adam::data_t r;
+  adam::data_t u;
 
-  void loadGains();
-  void printGains();
-  void resetSys();
-  void calcU();
+  int switch_idx;
+  double switch_scale;
+
+  void switchGains(int);
   void initParameters();
 
 private slots:

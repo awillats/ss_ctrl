@@ -24,6 +24,9 @@
 #include "ss_ctrl.h"
 #include <main_window.h>
 
+using namespace adam;
+
+
 extern "C" Plugin::Object*
 createRTXIPlugin(void)
 {
@@ -42,16 +45,21 @@ static DefaultGUIModel::variable_t vars[] = {
 		"X_in","state in", DefaultGUIModel::INPUT | DefaultGUIModel::VECTORDOUBLE,
 	},
 	{  "r","ref", DefaultGUIModel::INPUT},
+	{"q","state_index", DefaultGUIModel::INPUT | DefaultGUIModel::INTEGER},
+
 	{
 		"x1","state in", DefaultGUIModel::INPUT,
 	},//hardcode
 	{
 		"x2","state in", DefaultGUIModel::INPUT,
 	},//hardcode
-	{
-		"u","stim out", DefaultGUIModel::OUTPUT,
-	},
+	
+	{"u","stim out", DefaultGUIModel::OUTPUT,},
+	{"u_sw","stim out", DefaultGUIModel::OUTPUT,},
 
+	{
+		"debug2","stim out", DefaultGUIModel::OUTPUT,
+	},
 
 
 };
@@ -77,59 +85,26 @@ SsCtrl::~SsCtrl(void)
 {
 }
 
-
-void
-SsCtrl::loadGains(void)
-{
-	std::string homepath = getenv("HOME");
-
-	std::ifstream myfile;
-	myfile.open(homepath+"/RTXI/modules/ss_modules/ss_ctrl/params/gain_params.txt");
-
-	pullParamLine(myfile); //gets nx
-
-	std::vector<double> vK = pullParamLine(myfile); 	
-	Eigen::Map<Eigen::RowVector2d> tK(vK.data(),1,K.cols());
-	K = tK;
-
-	std::vector<double> nbar_vec = pullParamLine(myfile); 	
-	nbar = nbar_vec[0];
-
-	myfile.close();
-}
-
-void 
-SsCtrl::printGains(void)
-{
-  std::cout <<"Here is the matrix K:\n" << K << "\n";
-}
-
-void SsCtrl::resetSys(void)
-{
-	//mostly useless? since u is set instantaneously from x which is read in from input?
-       x << 0,0;//hardcode
-	u = 0;
-}
-
-void
-SsCtrl::calcU(void)
-{
-	u = r*nbar-K*x;
-	//setState("A State",u);
-}
-
 void
 SsCtrl::execute(void)
 {
-  //x << input(1), input(2);
-  plds::stdVec x_in = inputVector(0);
-  Eigen::Vector2d x_temp(x_in.data());
-  x = x_temp;//Eigen::Map<Vector2d>(x_in,1,2);//hardcode
-
+  stdVec x_in = inputVector(0);
   r = input(1);
+  switch_idx = input(2);
+  sw_ctrl.switchSys(switch_idx);
 
-  calcU();
+//pad x_in?
+  //xa = arma::conv_to<Vec>::from(x_in); 
+  for (int i=0; i<x.n_rows; i++)
+  {
+	//handle cases when x_in is the wrong size
+	x[i] = ( (i< (x_in.size()-1)) ? x_in[i] : 0 );
+  }
+ 
+  u=ctrlr.calcU(r,x);
+
   output(0) = u;
+  output(1) = sw_ctrl.calcU(r,x);
 
   return;
 }
@@ -137,16 +112,32 @@ SsCtrl::execute(void)
 void
 SsCtrl::initParameters(void)
 {
-  some_parameter = 0;
-  some_state = 0;
+	switch_scale = 1.4;
 
-	K << 1e2,1e2;//hardcode
-	x << 0,0;//hardcode
+	x = arma::vec(2); x.fill(0);
 	u = 0;
-	loadGains();
-	printGains();
 
+	ctrlr = lds_ctrl_adam();
+	ctrlr.printGains();
+	ctrlr.calcU(r,x);
 
+	sw_ctrl = slds_ctrl();
+	sw_ctrl.calcU(r,x);
+
+	std::cout<<"\nswitchdebug\n\n";
+	//sw_ctrl.switchSys(2);
+//sw_ctrl.switchSys(-1);
+
+	//std::cout<<"_"<<sw_ctrl.allSys.size()<<"_"<<"_";
+	//std::cout<<"\n\n bad idx done. good idx upcoming \n\n";
+	//sw_ctrl.switchSys(1);
+	//std::cout<<"sys2:"<<sw_ctrl.K;
+
+/*
+	sw_ctrl.switchSys(0);
+	std::cout<<"sys1:"<<sw_ctrl.K;
+	std::cout<<"sysB:"<<sw_ctrl.allSys[1].K;
+*/
 }
 
 
@@ -156,12 +147,9 @@ SsCtrl::update(DefaultGUIModel::update_flags_t flag)
   switch (flag) {
     case INIT:
       period = RT::System::getInstance()->getPeriod() * 1e-6; // ms
-      setParameter("GUI label", some_parameter);
-      setState("A State", some_state);
       break;
 
     case MODIFY:
-      some_parameter = getParameter("GUI label").toDouble();
       break;
 
     case UNPAUSE:
@@ -207,24 +195,21 @@ SsCtrl::customizeGUI(void)
 void
 SsCtrl::aBttn_event(void)
 {
-	loadGains();
-	printGains();
+	ctrlr.loadGains();
+	sw_ctrl.loadGains();
+	//loadGains();
+	//printGains();
 }
 
 void
 SsCtrl::bBttn_event(void)
 {
-	resetSys();
+	//resetSys();
 }
 
 void SsCtrl::zBttn_event(bool tog)
 {
-	loadGains();
-	if (tog)
-	{
-		K << 0.0,0.0;//hardcode
-	}
-	printGains();
+	ctrlr.toggleSilent();
 }
 
 
