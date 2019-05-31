@@ -91,6 +91,7 @@ SsCtrl::execute(void)
   stdVec x_in = inputVector(0);
   r = input(1);
   switch_idx = input(2);
+
   sw_ctrl.switchSys(switch_idx);
 
 //pad x_in?
