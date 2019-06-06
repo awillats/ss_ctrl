@@ -118,27 +118,13 @@ SsCtrl::initParameters(void)
 	x = arma::vec(2); x.fill(0);
 	u = 0;
 
+/*
 	ctrlr = lds_ctrl_adam();
 	ctrlr.printGains();
 	ctrlr.calcU(r,x);
-
+*/
 	sw_ctrl = slds_ctrl();
 	sw_ctrl.calcU(r,x);
-
-	std::cout<<"\nswitchdebug\n\n";
-	//sw_ctrl.switchSys(2);
-//sw_ctrl.switchSys(-1);
-
-	//std::cout<<"_"<<sw_ctrl.allSys.size()<<"_"<<"_";
-	//std::cout<<"\n\n bad idx done. good idx upcoming \n\n";
-	//sw_ctrl.switchSys(1);
-	//std::cout<<"sys2:"<<sw_ctrl.K;
-
-/*
-	sw_ctrl.switchSys(0);
-	std::cout<<"sys1:"<<sw_ctrl.K;
-	std::cout<<"sysB:"<<sw_ctrl.allSys[1].K;
-*/
 }
 
 
@@ -196,10 +182,8 @@ SsCtrl::customizeGUI(void)
 void
 SsCtrl::aBttn_event(void)
 {
-	ctrlr.loadGains();
+	//ctrlr.loadGains();
 	sw_ctrl.loadGains();
-	//loadGains();
-	//printGains();
 }
 
 void
@@ -210,7 +194,7 @@ SsCtrl::bBttn_event(void)
 
 void SsCtrl::zBttn_event(bool tog)
 {
-	ctrlr.toggleSilent();
+	sw_ctrl.toggleSilent();
 }
 
 

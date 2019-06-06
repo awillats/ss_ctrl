@@ -56,7 +56,7 @@ protected:
 private:
   double period;
 
-  lds_ctrl_adam ctrlr;
+ // lds_ctrl_adam ctrlr;
   slds_ctrl sw_ctrl;
 
   adam::Vec x;
