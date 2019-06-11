@@ -126,7 +126,9 @@ SsCtrl::initParameters(void)
 	sw_ctrl = slds_ctrl();
 	sw_ctrl.calcU(r,x);
 
-	sw_ctrl.augGains();
+	sw_ctrl.allSys[0].augGains(-1e3);
+	sw_ctrl.allSys[1].augGains(-1e3);
+
 }
 
 
