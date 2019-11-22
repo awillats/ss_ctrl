@@ -1,6 +1,8 @@
 PLUGIN_NAME = ss_ctrl
 
-HELP_DIR=/home/adam/RTXI/module_help
+HOME_DIR := /home/stanleyrtxi/CodeRepository/adam_RTXI#$(WILLATS_RTXI_HOME)
+HELP_DIR := $(HOME_DIR)/module_help
+#HELP_DIR=$(WILLATS_RTXI_HOME)/module_help
 PLDS_DIR=$(HELP_DIR)/plds_adam/plds_adamX/plds_adamX
 
 
@@ -15,13 +17,13 @@ SOURCES = ss_ctrl.cpp\
 	  $(PLDS_DIR)/plds_adam_funs.cpp\
 	$(PLDS_DIR)/plds_ctrl_adam.cpp
 
-LIBS = 
+LIBS =
 
 CXXFLAGS += -I$(HELP_DIR)
 CXXFLAGS += -I$(PLDS_DIR)
 
 # dynCtrlEst
-include Makefile.include_plds
+#include Makefile.include_plds
 
 # armadillo
 include Makefile.include_arm

@@ -32,7 +32,7 @@
 #include <StAC_rtxi/dataFuns.h>//for pullParamLine
 
 // plds
-#include <dynCtrlEst>
+#include <armadillo>//<dynCtrlEst>
 #include <plds_adam_funs.hpp>
 #include <plds_ctrl_adam.hpp>
 
